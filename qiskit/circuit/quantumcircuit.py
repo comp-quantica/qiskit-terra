@@ -3869,7 +3869,7 @@ class QuantumCircuit:
             ValueError: if the given mode is not known, or if too few ancilla qubits are passed.
             AttributeError: if no ancilla qubits are passed, but some are needed.
         """
-        from .library.standard_gates.x import MCXGrayCode, MCXRecursive, MCXVChain
+        from .library.standard_gates.x import MCXGrayCode, MCXRecursive, MCXVChain, McxVchainDirty
 
         num_ctrl_qubits = len(control_qubits)
 
@@ -3877,11 +3877,11 @@ class QuantumCircuit:
             "noancilla": MCXGrayCode(num_ctrl_qubits),
             "recursion": MCXRecursive(num_ctrl_qubits),
             "v-chain": MCXVChain(num_ctrl_qubits, False),
-            "v-chain-dirty": MCXVChain(num_ctrl_qubits, dirty_ancillas=True),
+            "v-chain-dirty": McxVchainDirty(num_ctrl_qubits),
             # outdated, previous names
             "advanced": MCXRecursive(num_ctrl_qubits),
             "basic": MCXVChain(num_ctrl_qubits, dirty_ancillas=False),
-            "basic-dirty-ancilla": MCXVChain(num_ctrl_qubits, dirty_ancillas=True),
+            "basic-dirty-ancilla": McxVchainDirty(num_ctrl_qubits),
         }
 
         # check ancilla input

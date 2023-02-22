@@ -17,7 +17,7 @@ from typing import Union, Optional
 from qiskit.circuit.exceptions import CircuitError
 from qiskit.extensions import UnitaryGate
 from . import ControlledGate, Gate, QuantumRegister, QuantumCircuit
-
+from .library.standard_gates.multi_control_special_unitary import Ldmcsu
 
 def add_control(
     operation: Union[Gate, ControlledGate],
@@ -188,18 +188,11 @@ def control(
                             lamb, q_control, q_target[bit_indices[qargs[0]]], use_basis_gates=True
                         )
                     else:
-                        controlled_circ.mcrz(
-                            lamb, q_control, q_target[bit_indices[qargs[0]]], use_basis_gates=True
-                        )
-                        controlled_circ.mcry(
-                            theta,
-                            q_control,
-                            q_target[bit_indices[qargs[0]]],
-                            q_ancillae,
-                            use_basis_gates=True,
-                        )
-                        controlled_circ.mcrz(
-                            phi, q_control, q_target[bit_indices[qargs[0]]], use_basis_gates=True
+                        gate_matrix = gate.to_matrix()
+                        controlled_circ.append(
+                            Ldmcsu(gate_matrix, len(q_control)),
+                            [*q_control, q_target],
+                            []
                         )
             elif gate.name == "z":
                 controlled_circ.h(q_target[bit_indices[qargs[0]]])

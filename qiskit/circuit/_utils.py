@@ -16,6 +16,7 @@ This module contains utility functions for circuits.
 import numpy
 from qiskit.exceptions import QiskitError
 from qiskit.circuit.exceptions import CircuitError
+from cmath import isclose, phase
 
 
 def _compute_control_matrix(base_mat, num_ctrl_qubits, ctrl_state=None):
@@ -95,3 +96,21 @@ def _ctrl_state_to_int(ctrl_state, num_ctrl_qubits):
     else:
         raise CircuitError(f"invalid control state specification: {repr(ctrl_state)}")
     return ctrl_state_std
+
+def u2_to_su2(u_2):
+    phase_factor = numpy.conj(numpy.linalg.det(u_2) ** (-1 / u_2.shape[0]))
+    su_2 = u_2 / phase_factor
+    return su_2, phase(phase_factor)
+
+def check_u2(matrix):
+    if matrix.shape != (2, 2):
+        raise ValueError(
+            "The shape of a U(2) matrix must be (2, 2)."
+        )
+    if not numpy.allclose(matrix @ numpy.conj(matrix.T), [[1.0, 0.0],[0.0, 1.0]]):
+        raise ValueError(
+            "The columns of a U(2) matrix must be orthonormal."
+        )
+
+def check_su2(matrix):
+    return isclose(numpy.linalg.det(matrix), 1.0)
